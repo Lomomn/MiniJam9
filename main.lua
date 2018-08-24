@@ -12,7 +12,7 @@ shared = {
 
 
 function love.load() 
-    currentState = menuState
+    currentState = playState
     currentState.load()
 end
 
