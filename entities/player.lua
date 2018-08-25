@@ -12,9 +12,9 @@ end
 
 
 function Player.update(self, dt)
-    if love.keyboard.isDown(shared.left) then
+    if love.keyboard.isDown(shared.left, 'left') then
         self.dir = (self.dir - (math.pi/2)*dt) % (math.pi*2)
-    elseif love.keyboard.isDown(shared.right) then
+    elseif love.keyboard.isDown(shared.right, 'right') then
         self.dir = (self.dir + (math.pi/2)*dt) % (math.pi*2)
     end
 
@@ -25,6 +25,10 @@ end
 
 
 function Player.draw(self)
+    self.bounds['hitbox']:draw('fill')
+end
+
+function Player.drawMap(self)
     self.bounds['hitbox']:draw('fill')
 end
 

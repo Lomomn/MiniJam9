@@ -8,11 +8,16 @@ shared = {
     changeState = false,    -- Should state change to the non active one?
     left = 'a',             -- Left control
     right = 'e',            -- Right control
-    hiscore = 0             -- The high score
+    hiscore = 0,            -- The high score
+    origW = 0,              -- Starting size of game window
+    origH = 0
 }
 
 
 function love.load() 
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+    shared.origW, shared.origH = love.graphics.getDimensions()
+    
     currentState = playState
     currentState.load()
 end
@@ -45,4 +50,8 @@ function love.keypressed(key, isrepeat)
     else
         currentState.keypressed(key, isrepeat)
     end
+end
+
+function love.resize(w, h)
+    currentState.resize(w, h)
 end

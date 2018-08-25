@@ -11,4 +11,10 @@ function Obstacle.draw(self)
     love.graphics.setColor(1,1,1)
 end
 
+function Obstacle.drawMap(self)
+    love.graphics.setColor(0,0,0)
+    self.bounds['hitbox']:draw('fill')
+    love.graphics.setColor(1,1,1)
+end
+
 return Obstacle

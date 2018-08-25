@@ -47,4 +47,9 @@ function menu.keypressed(key, isrepeat)
 end
 
 
+function menu.resize(w, h)
+
+end
+
+
 return menu
