@@ -4,6 +4,7 @@ local menu = {}
 local canvas = love.graphics.newCanvas(256, 256)
 local font = love.graphics.newFont('assets/fonts/8bitOperatorPlus-Regular.ttf')
 local text = love.graphics.newText(font, 'Super School Navigator')
+local score = love.graphics.newText(font, '')
 local camera = Camera(text:getWidth()/2,text:getHeight()/2)
 local tween = {}
 
@@ -32,10 +33,12 @@ end
 
 function menu.draw()    
     camera:attach()
-    
     love.graphics.draw(text, 0,0)
-    
     camera:detach()
+    
+    score:set('Hi-Score: ' .. tostring(shared.hiscore))
+
+    love.graphics.draw(score, love.graphics.getWidth()/2 - score:getWidth()/2, love.graphics.getHeight() - score:getHeight()*2)
 end
 
 

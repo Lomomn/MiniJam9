@@ -4,10 +4,14 @@ local COL = require('lib.COL.col')
 local Player = require('entities.player')
 local Obstacle = require('entities.obstacle')
 local List = require('lib.loveHelper.list')
+local Camera = require('lib.hump.camera')
+
 
 function Level.init(self)
     self.col = COL()
     self.obstacles = List()
+    self.camera = Camera(0,0)
+
 
     self.maxW, self.maxH = 440, 256
 
@@ -62,13 +66,19 @@ end
 
 function Level:draw()
     -- Draw the normal view of the level for the player to navigate
+    self.camera:lookAt(self.player.pos:unpack())
+    self.camera.rot = -self.player.dir-math.pi/2
     
+    self.camera:attach()
     love.graphics.setColor(0,0,1)
     love.graphics.rectangle('line', 0,0, self.maxW, self.maxH)
     love.graphics.setColor(1,1,1)
-
+    
     self.player:draw()
     self.obstacles:draw()
+    self.camera:detach()
+
+    love.graphics.print(self.player.dir, 0,0)
 end
 
 
@@ -76,8 +86,9 @@ function Level.update(self, dt)
     self.player:update(dt)
 
     self.col:collisions(self.player, self.obstacles.alive, function(player, obstacle) 
-        -- Wall collision, end game
+        shared.changeState = true
     end)
 end
 
 return Level
+

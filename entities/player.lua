@@ -13,11 +13,10 @@ end
 
 function Player.update(self, dt)
     if love.keyboard.isDown(shared.left) then
-        self.dir = self.dir - math.pi*dt
+        self.dir = (self.dir - (math.pi/2)*dt) % (math.pi*2)
     elseif love.keyboard.isDown(shared.right) then
-        self.dir = self.dir + math.pi*dt
+        self.dir = (self.dir + (math.pi/2)*dt) % (math.pi*2)
     end
-
 
     local vel = self.vel:rotated(self.dir) * dt
     self.bounds['hitbox']:move(vel.x, vel.y)

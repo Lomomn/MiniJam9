@@ -7,7 +7,8 @@ local currentState = nil
 shared = {
     changeState = false,    -- Should state change to the non active one?
     left = 'a',             -- Left control
-    right = 'e'             -- Right control
+    right = 'e',            -- Right control
+    hiscore = 0             -- The high score
 }
 
 
