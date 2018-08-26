@@ -8,6 +8,7 @@ shared = {
     changeState = false,    -- Should state change to the non active one?
     left = 'a',             -- Left control
     right = 'e',            -- Right control
+    score = 0,              -- The current score
     hiscore = 0,            -- The high score
     origW = 0,              -- Starting size of game window
     origH = 0
@@ -17,6 +18,10 @@ shared = {
 function love.load() 
     love.graphics.setDefaultFilter('nearest', 'nearest')
     shared.origW, shared.origH = love.graphics.getDimensions()
+    local hiscore = love.filesystem.read('save.txt')
+    if hiscore then
+        shared.hiscore = tonumber(hiscore)
+    end
     
     currentState = playState
     currentState.load()

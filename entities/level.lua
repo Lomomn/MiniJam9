@@ -3,13 +3,18 @@ local Level = Class{__name = 'Level'}
 local COL = require('lib.COL.col')
 local Player = require('entities.player')
 local Obstacle = require('entities.obstacle')
+local Goal = require('entities.goal')
 local List = require('lib.loveHelper.list')
 local Camera = require('lib.hump.camera')
 
 local MapGraphic = love.graphics.newImage('assets/images/map.png')
 local TargetGraphic = love.graphics.newImage('assets/images/target.png')
 local StartGraphic = love.graphics.newImage('assets/images/start.png')
+local FloorGraphic = love.graphics.newImage('assets/images/floor.png')
+FloorGraphic:setWrap('repeat', 'repeat')
 
+
+    
 function Level.init(self, die, win)
     self.die, self.win = die, win
     self.col = COL()
@@ -18,9 +23,17 @@ function Level.init(self, die, win)
     self.resize(self, love.graphics.getDimensions())
     self.viewingMap = true
     self.mapViewingTime = 1
-    self.mapCanvas = love.graphics.newCanvas(256,256)   
-
+    self.mapCanvas = love.graphics.newCanvas(256,256)
+    self.goal = nil
+    
     self.maxW, self.maxH = 440, 256
+    self.floorMesh = love.graphics.newMesh({
+        {0,0,  0,0,  1,1,1,1},
+        {self.maxW,0,  self.maxW/64,0,  1,1,1,1},
+        {self.maxW,self.maxH,  self.maxW/64,self.maxH/64,  1,1,1,1},
+        {0,self.maxH,  0,self.maxH/64,  1,1,1,1},
+    }, 'fan')
+    self.floorMesh:setTexture(FloorGraphic)
 
     local x, y  = 48, 0
     local ow,oh = 64, 64
@@ -31,6 +44,18 @@ function Level.init(self, die, win)
             local h = self.maxH - love.math.random(oh/2, oh*2)
             local ob = Obstacle(self.col, x, self.maxH-h, ow, h)
             self.obstacles:register(ob)
+
+            if not self.goal then
+                if args.last or love.math.random(1,3)==1 then
+                    -- Add the end goal
+                    self.goal = Goal(self.col, 
+                        x-2,
+                        love.math.random(self.maxH-h, self.maxH-oh),
+                        ow/2,
+                        oh/2
+                    )
+                end
+            end
         end,
         [2] = function(args)
             -- Top down, random size
@@ -40,17 +65,43 @@ function Level.init(self, die, win)
             else
                 h = self.maxH - love.math.random(oh/2, oh*2)
             end
+            
             local ob = Obstacle(self.col, x, 0, ow, h)
+
+            if not self.goal then
+                if args.last or love.math.random(1,3)==1 then
+                    -- Add the end goal
+                    self.goal = Goal(self.col, 
+                        x-2,
+                        love.math.random(0, h-oh/2),
+                        ow/2,
+                        oh/2
+                    )
+                end
+            end
+
             self.obstacles:register(ob)       
         end,
         [3] = function(args)
             -- Gap
-            local g = love.math.random(oh, self.maxH-oh)
+            local g = love.math.random(oh, self.maxH-oh) -- Where the gap starts
 
             local f = Obstacle(self.col, x,0, ow, g-oh/2)
             local s = Obstacle(self.col, x,g+oh/2, ow, self.maxH-g-oh/2)
             self.obstacles:register(f)
             self.obstacles:register(s)
+
+            if not self.goal then
+                if args.last or love.math.random(1,3)==1 then
+                    -- Add the end goal
+                    self.goal = Goal(self.col, 
+                        x-2,
+                        love.math.random(0, self.maxH-g-oh/2),
+                        ow/2,
+                        oh/2
+                    )
+                end
+            end
         end
     }
 
@@ -61,10 +112,13 @@ function Level.init(self, die, win)
     self.obstacles:register(Obstacle(self.col, -ow, self.maxH, self.maxW+oh*2, oh))
 
     -- Add the columns of classrooms
-    local current, columns = 0, 4
+    local current, columns = 0, 3
     while current < columns do
-        genStyles[love.math.random(1,3)]({first = current == 0 and true or false})
-        x = x + ow * 1.75
+        genStyles[love.math.random(1,3)]({
+            first = current == 0 and true or false,
+            last  = current == columns-1
+        })
+        x = x + ow * 2
 
         current = current + 1
     end
@@ -83,15 +137,16 @@ function Level.init(self, die, win)
         self.camera:rotate(love.math.random(-8,8)*(math.pi/64))
         self.camera:attach()
         
-
         
         local px,py = self.player.bounds['hitbox']:bbox()
         love.graphics.draw(StartGraphic, px, py)
-
+        
         for object,_ in pairs(self.obstacles.alive) do
             object:drawMap()
         end
-
+        
+        px,py = self.goal.bounds['hitbox']:bbox()
+        love.graphics.draw(TargetGraphic, px, py)
 
         self.camera:detach()
     love.graphics.setCanvas()
@@ -118,12 +173,11 @@ function Level:draw()
         self.camera.rot = -self.player.dir-math.pi/2
         
         self.camera:attach()
-        love.graphics.setColor(0,0,1)
-        love.graphics.rectangle('line', 0,0, self.maxW, self.maxH)
+        love.graphics.draw(self.floorMesh, 0,0)
         
-        love.graphics.setColor(0,1,0)
         self.player:draw()
         self.obstacles:draw()
+        self.goal:draw()
             
         self.camera:detach()
         
@@ -150,6 +204,10 @@ function Level.update(self, dt)
 
         self.col:collisions(self.player, self.obstacles.alive, function(player, obstacle) 
             self.die()
+        end)
+        -- Lazy table collision, I should alter COL to allow two objects in flixel format
+        self.col:collisions(self.player, {[self.goal]=true}, function(player, goal) 
+            self.win()
         end)
     end
 end

@@ -3,6 +3,8 @@ local Vector = require('lib.hump.vector')
 local Object = require('entities.object')
 local Player = Class{__name = 'Player', __includes = {Object}}
 
+local PlayerGraphic = love.graphics.newImage('assets/images/guy.png')
+
 function Player.init(self, scene, x,y, w,h)
     Object.init(self, scene, x,y, w,h)
     self.speed = 40
@@ -26,6 +28,9 @@ end
 
 function Player.draw(self)
     self.bounds['hitbox']:draw('fill')
+
+    local x,y = self.bounds['hitbox']:center()
+    love.graphics.draw(PlayerGraphic, x,y, self.dir+math.pi/2, 1,1, self.w, self.h)
 end
 
 function Player.drawMap(self)
