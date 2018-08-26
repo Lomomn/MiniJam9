@@ -3,17 +3,16 @@ local Goal = Class{__name = 'Goal', __includes = {Object}}
 
 local DoorGraphic = love.graphics.newImage('assets/images/door.png')
 
-function Goal.init(self, scene, x,y, w,h)
+function Goal.init(self, scene, x,y, w,h, r)
     Object.init(self, scene, x,y, w,h)
+    self.r = r
 end
 
 function Goal.draw(self)
     love.graphics.setColor(1,1,0)
-    self.bounds['hitbox']:draw('fill')
+    -- self.bounds['hitbox']:draw('fill')
     love.graphics.setColor(1,1,1)
 
-    local x,y = self.bounds['hitbox']:bbox()
-    love.graphics.draw(DoorGraphic, x-self.w+2, y)
 end
 
 function Goal.drawMap(self)

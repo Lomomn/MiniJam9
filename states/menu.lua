@@ -6,16 +6,16 @@ local font = love.graphics.newFont('assets/fonts/8bitOperatorPlus-Regular.ttf')
 local text = love.graphics.newText(font, 'Super School Navigator')
 local score = love.graphics.newText(font, '')
 local camera = Camera(text:getWidth()/2,text:getHeight()/2)
-local tween = {}
 
 function menu.load() 
-    tween = Timer.script(function(wait)
+    Timer.clear()
+    Timer.script(function(wait)
         while true do
-            Timer.tween(0.5, camera, {
+            Timer.tween(0.3, camera, {
                 scale = love.math.random(4,8)*2/8,
                 rot = love.math.random(-8, 8)*math.pi/64
             })
-            wait(0.5)
+            wait(0.3)
         end
     end)
 end

@@ -1,6 +1,7 @@
 local COL = require('lib.COL.col')
 local List = require('lib.loveHelper.list')
 local Level = require('entities.level')
+local Bully = require('entities.bully')
 
 
 local play = {}
@@ -19,8 +20,14 @@ function play.load()
         shared.changeState = true
     end, function()
         shared.score = shared.score + 1
+        Bully.speed = Bully.speed + 1
         play.load()
-    end)
+    end,
+    (function()
+        local time = 3/(1-(shared.score/10))
+        if time < 0.5 then time = 0.5 end
+        return time
+    end)())
 end
 
 
