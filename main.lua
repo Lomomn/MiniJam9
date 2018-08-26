@@ -7,7 +7,7 @@ local currentState = nil
 shared = {
     changeState = false,    -- Should state change to the non active one?
     left = 'a',             -- Left control
-    right = 'e',            -- Right control
+    right = 'd',            -- Right control
     score = 0,              -- The current score
     hiscore = 0,            -- The high score
     origW = 0,              -- Starting size of game window
@@ -23,7 +23,7 @@ function love.load()
         shared.hiscore = tonumber(hiscore)
     end
     
-    currentState = playState
+    currentState = menuState
     currentState.load()
 end
 
