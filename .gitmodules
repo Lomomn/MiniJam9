@@ -6,7 +6,7 @@
 	url = https://github.com/vrld/hump
 [submodule "lib/COL"]
 	path = lib/COL
-	url = https://github.com/lomomn/COL
+	url = https://github.com/scarycoffee/COL
 [submodule "lib/loveHelper"]
 	path = lib/loveHelper
-	url = https://github.com/lomomn/loveHelper
+	url = https://github.com/scarycoffee/loveHelper
